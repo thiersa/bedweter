@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<script type="text/javascript" src="lib/orbitdb.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="lib/ipfs-browser-daemon.min.js" charset="utf-8"></script>
+	</head>
+	<body>
+		<button id="open" type="button">Open</button>
+		<div id="output"> </div>
+		<script type="text/javascript">
+			const elm = document.getElementById("output")
+			const dbnameField = document.getElementById("dbname")
+			const openButton = document.getElementById("open")
+			const openDatabase = () => {
+				elm.innerHTML = "Starting IPFS..."
+					const dbname = 'blaat'
+					const username = 1494330600000
+					const key = 'greeting'
+					const ipfs = new IpfsDaemon({
+						IpfsDataDir: '/orbit-db-/examples/browser',
+						SignalServer: 'star-signal.cloud.ipfs.team', // IPFS dev server
+					})
+				function handleError(e) {
+					console.error(e.stack)
+						elm.innerHTML = e.message  
+				}
+
+				ipfs.on('error', (e) => handleError(e))
+					ipfs.on('ready', () => {
+						elm.innerHTML = "Loading database..."
+							const orbit = new OrbitDB(ipfs, username)
+							const db = orbit.kvstore(dbname)
+							const log = orbit.eventlog(dbname + ".log")
+							const counter = orbit.counter(dbname + ".count")
+							db.events.on('ready', () => {
+								console.log( "Database is ready")
+									printresults()
+							})
+						log.events.on('ready', () => {printresults()})
+							log.events.on('synced', () => {printresults()})
+							counter.events.on('ready', () => {printresults()})
+							counter.events.on('synced', ()=> {printresults()})
+							db.events.on('synced', () => {
+								console.log("database is synced")
+									printresults()
+							})
+						function printresults(){
+							const count = counter.value
+								const result = db.get(key)
+								const latest = log.iterator({limit: 5}).collect()
+								console.log(count + " en " + result + "en" + latest.reverse().map((e) => e.payload.value).join('\n'))
+						}
+
+
+						db.load(10)
+							.then(()=> counter.load(10))
+							.then(()=> log.load(10))
+							.then(()=>{
+								count = counter.value
+									setInterval(printresults, 2000)})
+					})
+			}
+
+openButton.addEventListener('click', openDatabase)	
+		</script>
+	</body>
+</html>
