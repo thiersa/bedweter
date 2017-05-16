@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <input id="dbname" type="text" placeholder="Database name"/>
+    <button id="open" type="button">Open</button>
+    <button id="recall" type="button">Recall</button>
+    <br><br>
+    <div id="output"></div>
+
+    <script type="text/javascript" src="lib/orbitdb.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="lib/index.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      const elm = document.getElementById("output")
+      const dbnameField = document.getElementById("dbname")
+      const openButton = document.getElementById("open")
+      const recallButton = document.getElementById("recall")
+			const interval = 2000
+			var db
+      const key = 'greeting'
+      const openDatabase = () => {
+        openButton.disabled = true
+        elm.innerHTML = "Starting IPFS..."
+				const ipfs = new Ipfs({
+							init: true,
+							start: true,
+							EXPERIMENTAL: {
+								pubsub: true,
+								sharding: true,
+							}
+        })
+        function handleError(e) {
+          console.error(e.stack)
+          elm.innerHTML = e.message  
+        }
+        ipfs.on('error', (e) => handleError(e))
+        ipfs.on('ready', () => {
+          elm.innerHTML = "Loading database..."
+          const orbit = new OrbitDB(ipfs, "foobar")
+          db = orbit.kvstore(dbname, { maxHistory: 5, syncHistory: false, cachePath: '/orbit-db' })
+          const query = () => {
+						const value = "hoi "+ new Date().getTime()
+//            db.put(key, value)
+//              .catch((e) => handleError(e))
+//						console.log("Geschreven naar database: " + value )
+          }
+         //db.events.on('synced', () => getData())
+         //db.events.on('ready', () => getData())
+          // Start query loop when the databse has loaded its history
+          db.load(10)
+            .then(() => {
+              setInterval(query, interval)
+            })
+        })
+      }
+      const getData = () => {
+          const result = db.get(key)
+					elm.innerHTML = result
+					console.log("data opgehaald: " + result)
+      }
+      openButton.addEventListener('click', openDatabase)
+      recallButton.addEventListener('click', getData)
+    </script>
+  </body>
+</html>
