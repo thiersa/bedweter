@@ -1,0 +1,34 @@
+{
+  "name": "bw",
+  "version": "1.0.0",
+  "description": "A hospital bed reservation application",
+  "main": "index.js",
+  "scripts": {
+    "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
+    "webpack": "webpack",
+    "start": "http-server"
+  },
+  "author": "ad, mo",
+  "license": "ISC",
+  "keywords": [
+    "hospital",
+    "bed",
+    "reservation"
+  ],
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-transform-es3-member-expression-literals": "^6.22.0",
+    "babel-plugin-transform-es3-property-literals": "^6.22.0",
+    "babel-preset-es2015": "^6.24.1",
+    "http-server": "^0.10.0",
+    "webpack": "^2.6.1"
+  },
+  "dependencies": {
+    "async": "^2.4.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "ipfs": "^0.24.0",
+    "openpgp": "^2.5.4"
+  }
+}
